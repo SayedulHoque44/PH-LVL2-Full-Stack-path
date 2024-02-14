@@ -102,5 +102,31 @@ const facultySchema = new Schema<TFaculty>(
   },
 );
 
+// generating full name
+facultySchema.virtual("fullName").get(function () {
+  return (
+    this?.name?.firstName +
+    "" +
+    this?.name?.middleName +
+    "" +
+    this?.name?.lastName
+  );
+});
+
+// filter out deleted documents
+facultySchema.pre("find", function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+facultySchema.pre("findOne", function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+facultySchema.pre("aggregate", function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
 // model
 export const FacultyModel = model<TFaculty>("Faculty", facultySchema);

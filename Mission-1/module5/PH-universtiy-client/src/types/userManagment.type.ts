@@ -22,6 +22,21 @@ export interface TStudent {
   academicFaculty: TAcademicFaculty;
   fullName: string;
 }
+export interface TFaculty {
+  _id: string;
+  name: TName;
+  id: string;
+  designation: string;
+  gender: string;
+  dateOfBirth: string;
+  email: string;
+  contactNo: string;
+  emergencyContactNo: string;
+  bloodGroup: string;
+  presentAddress: string;
+  permanentAddress: string;
+  academicDepartment: TAcademicDepartment;
+}
 
 export type TUser = {
   _id: string;

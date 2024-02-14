@@ -9,7 +9,7 @@ import {
   useGetAllAcademicDepartmentsQuery,
   useGetAllSemestersQuery,
 } from "../../../redux/features/admin/academicManagement.api";
-import { useAddStudentMutation } from "../../../redux/features/admin/userManagement.type";
+import { useAddStudentMutation } from "../../../redux/features/admin/userManagement.api";
 
 // const studentDummyData = {
 //   password: "student123",
@@ -88,26 +88,33 @@ const studentDefaultValues = {
 };
 
 const CreateStudent = () => {
+  // add student mutation
   const [addStudent, { data, error }] = useAddStudentMutation();
 
+  // test getting error or success data
   console.log({ data, error });
 
+  // get all semister
   const { data: sData, isLoading: sIsLoading } =
     useGetAllSemestersQuery(undefined);
 
+  // get all academicDepartment
   const { data: dData, isLoading: dIsLoading } =
     useGetAllAcademicDepartmentsQuery(undefined);
 
+  // generate semester options
   const semesterOptions = sData?.data?.map((item) => ({
     value: item._id,
     label: `${item.name} ${item.year}`,
   }));
 
+  // generate department options
   const departmentOptions = dData?.data?.map((item) => ({
     value: item._id,
     label: item.name,
   }));
 
+  // submit to add student
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     const studentData = {
       password: "student123",
@@ -115,15 +122,15 @@ const CreateStudent = () => {
     };
 
     const formData = new FormData();
+    // { data:studentData, file:image}
     formData.append("data", JSON.stringify(studentData));
     formData.append("file", data.image);
 
-    console.log(studentData);
+    // console.log(studentData);
 
+    // add student
     addStudent(formData);
 
-    //! This is for development
-    //! Just for checking
     // console.log(Object.fromEntries(formData));
   };
 

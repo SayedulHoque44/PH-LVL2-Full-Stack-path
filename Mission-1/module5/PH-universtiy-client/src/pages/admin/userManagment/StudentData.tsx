@@ -10,7 +10,7 @@ import { useState } from "react";
 import { TQueryParam, TStudent } from "../../../types";
 
 import { Link } from "react-router-dom";
-import { useGetAllStudentsQuery } from "../../../redux/features/admin/userManagement.type";
+import { useGetAllStudentsQuery } from "../../../redux/features/admin/userManagement.api";
 
 export type TTableData = Pick<
   TStudent,
@@ -19,13 +19,14 @@ export type TTableData = Pick<
 
 const StudentData = () => {
   const [params, setParams] = useState<TQueryParam[]>([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(2);
   const {
     data: studentData,
     isLoading,
     isFetching,
   } = useGetAllStudentsQuery([
     { name: "page", value: page },
+    { name: "limit", value: 2 },
     { name: "sort", value: "id" },
     ...params,
   ]);

@@ -11,22 +11,19 @@ import { verifyToken } from "../utils/verifyToken";
 
 const Login = () => {
   const navigate = useNavigate();
-  // const { register, handleSubmit } = useForm({
-  //   defaultValues: {
-  //     id: "A-0001",
-  //     password: "ami1234",
-  //   },
-  // });
+
+  //Std -  ID: "2024030001" , Password:"ami1234"
+  //Admin - ID: "A-0001", Password: "ami123", SA-admin12345
+  //Faculty - ID: "F-0002", Password: "ami1234",
   const defaultValues = {
-    ID: "A-0001",
-    Password: "ami123",
+    ID: "F-0002",
+    Password: "ami1234",
   };
   const [login] = useLoginMutation();
   const dispatch = useAppDispatch();
 
   //
   const onSubmit = async (data: FieldValues) => {
-    console.log(data);
     const toastId = toast.loading("Logging in");
     try {
       const userInfo = {
@@ -41,12 +38,15 @@ const Login = () => {
           token: res.data.accessToken,
         })
       );
-      navigate(`/${user.role}/dashboard`);
+
       toast.success("Login successfull", { id: toastId });
-    } catch (error) {
-      // toast.error("Somthing went wrong");
-      // console.log(error);
-      toast.error("Something went wrong", { id: toastId, duration: 2000 });
+      if (res.data.needsPasswordChange) {
+        navigate(`/change-password`);
+      } else {
+        navigate(`/${user.role}/dashboard`);
+      }
+    } catch (error: any) {
+      toast.error(error.data.message, { id: toastId, duration: 2000 });
     }
   };
 

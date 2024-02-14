@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import config from "../../config";
 import AppError from "../../error/AppError";
 import { sendImageToCloudinary } from "../../utils/sendImageCloudinary";
+import { TAdmin } from "../Admin/admin.interface";
 import { Admin } from "../Admin/admin.model";
 import { TFaculty } from "../Faculty/faculty.interface";
 import { FacultyModel } from "../Faculty/faculty.model";
@@ -177,19 +178,11 @@ const createFacultyIntoDB = async (
 // createStudent
 const createAdminIntoDB = async (
   password: string,
-  payload: TFaculty,
+  payload: TAdmin,
   file: any,
 ) => {
   // create a user object
   const userData: Partial<TUser> = {};
-
-  const academicDepartment = await AcademicDepartmentModel.findById(
-    payload.academicDepartment,
-  );
-
-  if (!academicDepartment) {
-    throw new AppError(httpStatus.NOT_FOUND, "Academic Department not Found!");
-  }
 
   //if password is not given , use deafult password
   userData.password = password || (config.default_pass as string);
