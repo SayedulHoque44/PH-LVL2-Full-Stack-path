@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  published Boolean  @default(false)
+  authorId  Int
+  user      User     @relation(fields: [authorId], references: [id]) // relation constraint have write in foreignkey holder model. // one to many relation.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postCategory PostCategory[]
+
+  @@map("posts") // it will drop post and reCreate name with posts
+}
+
+// User model
+model User {
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  email    String
+  role     UserRole @default(user) // user enum and default
+  profile  Profile? // relation field connect - one to one rltn
+  Post     Post[]
+
+  @@map("Users") // it will drop user and reCreate name with Users
+}
+
+// enum for Users
+enum UserRole {
+  user
+  admin
+}
+
+// Profile model
+model Profile {
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  userId Int     @unique // becouse of one to one rlation so we have to identify that's unique key.
+
+  user User @relation(fields: [userId], references: [id]) // variable ModelName @relation(fields:[foreign_Key],references:[PK_of_ref_model])
+
+  @@map("Profiles")
+}
+
+// category model
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+  postCategory PostCategory[]
+
+  @@map("Categorys")
+}
+
+// PostCategory model // when there many to many rltn then we have to create a another table to connect both of them
+model PostCategory {
+  postId   Int
+  post Post @relation(fields: [postId],references: [id])
+  categoryId Int
+  category Category @relation(fields: [categoryId],references: [id])
+
+ @@id([postId,categoryId]) // if a table have mulitiple foreign key then we have to create composite key. @@id[FK,FK] - composite key (for use as a PK of PostCategory)
+
+  @@map("Post_Category")
+}
+
+
+
+// npx prisma migrate dev -- for create the table and database sync
+// npx prisma studio  -- for database studio,

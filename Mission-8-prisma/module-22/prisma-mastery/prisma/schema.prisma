@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post{
+  id Int @id @default(autoincrement())// @id:(mean primary key) - autoincrement():auto number increment
+  title String
+  content String
+  published Boolean @default(false)
+  authorName String? // ? : optional
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("posts") // it will drop post and reCreate name with posts
+}
+
+// npx prisma migrate dev -- for create the table and database sync
+// npx prisma studio  -- for database studio,
