@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+//prisma Migrate : is working with database related operation like define table,cloumn,constraint,model,schema
+//prisma client : is for perform query on the database
+
+//1. `npx prisma db pull` : If there are existing db and we created so many table and we want to work on this project then we dont need to write model/schema here agian, we just execute the command it will pull the db model and schema here.and dont migrate first then data will be lost you have to just generate prisma client using `npx prisma generate`, then next if you update/changes you schema.prisma then you have to need a new migration `npx prisma migrate dev` after migration it also generate the prisma client. but if you want to show just schema then `npx prisma db pull --print` add --print to just show in the terminal db schema.
+
+//3.`npx prisma migrate dev` : This cmnd for sync our db with the schema.prisma, and every changes in the schema.prisma model/schema we have to execute this cmnd to update our database with the latest code we written.and every migrate with the changes there will be migration.sql will be create, be carefull delete the migration.sql , if you delete this migration.sql once then the changes you did in this migration this change will be deleted, that's mean every changes of schema/model created migration.sql and it have to be in migration folder. note:()
+
+//3.`npx prisma generate` : when we migrate our model then prisma generate also generate autometic but if sometimes it now working then we can cmnd it to execute manually.
+
+//3.`npx prisma studio` : For op db GUI(graphical user interface), we can also monitor and edit db here, it's open in browser tab. note:(if we change schema.prisma then restart the studio then changes will effect on the studio.but not in the query,query will work till migrate the schema.prisma,means query will effect after migrate.)
+
+//If new added model and then migrate we can execute query on it CRUD all, suppose you delete the new model created migration folder but not new migrate yet then still u able to execute query on it but it's a waste of time cz since you delete the this model migration next when you cmnd new migrate then this model created/changes will delete everyting cz you delete the migration folder which is like a record.
+
+// but you deleted a migration folder and still want to changes remain same to save your added data then you dont  migrate first you have to just generate the prisma client using this cmnd `npx prisma generate`
+
+//`npx prisma validate` : To get error if encountered and validate your schema.
+//`npx prisma formate` : To formate the prisma, 
+//`npx prisma db push` : if you want to send your schema to db but not to generate the prisma client then you can cmnd this, 
+//`npx prisma` : get all prisma command
+
+
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  published Boolean  @default(false)
+  authorId  Int
+  user      User     @relation(fields: [authorId], references: [id]) // relation constraint have write in foreignkey holder model. // one to many relation.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postCategory PostCategory[]
+
+  @@map("posts") // it will drop post and reCreate name with posts
+}
+
+// User model
+model User {
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  email    String
+  age      Int @default(0)
+  role     UserRole @default(user) // user enum and default
+  profile  Profile? // relation field connect - one to one rltn
+  Post     Post[]
+
+  @@map("Users") // it will drop user and reCreate name with Users in the database// orginal table name is users in the database
+}
+
+// enum for Users
+enum UserRole {
+  user
+  admin
+}
+
+// Profile model
+model Profile {
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  userId Int     @unique // becouse of one to one rlation so we have to identify that's unique key.
+
+  user User @relation(fields: [userId], references: [id]) // variable ModelName @relation(fields:[foreign_Key],references:[PK_of_ref_model])
+
+  @@map("Profiles")
+}
+
+// category model
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+  postCategory PostCategory[]
+
+  @@map("Categorys")
+}
+
+// category model
+model Test {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@map("Test")
+}
+
+// PostCategory model // when there many to many rltn then we have to create a another table to connect both of them
+model PostCategory {
+  postId   Int
+  post Post @relation(fields: [postId],references: [id])
+  categoryId Int
+  category Category @relation(fields: [categoryId],references: [id])
+
+ @@id([postId,categoryId]) // if a table have mulitiple foreign key then we have to create composite key. @@id[FK,FK] - composite key (for use as a PK of PostCategory)
+
+  @@map("Post_Category")
+}
+
+
+
+// npx prisma migrate dev -- for create the table and database sync
+// npx prisma studio  -- for database studio,
