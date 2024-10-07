@@ -1,0 +1,22 @@
+{
+  "shoes": [
+    {
+      "id": 1,
+      "name": "Air Max 90",
+      "brand": "Nike",
+      "price": 1202
+    },
+    {
+      "id": 2,
+      "name": "Chuck Taylor All Star",
+      "brand": "Converse",
+      "price": 57
+    },
+    {
+      "id": 3,
+      "name": "Old Skool",
+      "brand": "Vans",
+      "price": 60
+    }
+  ]
+}
